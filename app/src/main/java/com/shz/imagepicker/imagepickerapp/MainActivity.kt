@@ -2,6 +2,7 @@ package com.shz.imagepicker.imagepickerapp
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -9,14 +10,15 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.shz.imagepicker.imagepicker.ImagePicker
 import com.shz.imagepicker.imagepicker.ImagePickerCallback
+import com.shz.imagepicker.imagepicker.ImagePickerErrorCallback
 import com.shz.imagepicker.imagepicker.model.GalleryPicker
 import com.shz.imagepicker.imagepicker.model.PickedResult
 import com.shz.imagepicker.imagepickerapp.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), ImagePickerCallback {
+class MainActivity : AppCompatActivity(), ImagePickerCallback, ImagePickerErrorCallback {
 
     private val imagePicker: ImagePicker.Builder
-        get() = ImagePicker.Builder(this.packageName + ".provider", this)
+        get() = ImagePicker.Builder(this.packageName + ".provider", this, this)
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: ImagesDemoAdapter
@@ -97,5 +99,9 @@ class MainActivity : AppCompatActivity(), ImagePickerCallback {
         adapter = ImagesDemoAdapter()
         recyclerImages.adapter = adapter
         recyclerImages.layoutManager = GridLayoutManager(this@MainActivity, 2)
+    }
+
+    override fun onImagePickerErrorResult(message: String) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
     }
 }

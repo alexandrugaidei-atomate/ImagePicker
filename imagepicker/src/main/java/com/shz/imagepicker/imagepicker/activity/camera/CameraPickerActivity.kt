@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import com.shz.imagepicker.imagepicker.ImagePickerCallback
+import com.shz.imagepicker.imagepicker.ImagePickerErrorCallback
 import com.shz.imagepicker.imagepicker.core.ImagePickerActivity
 import com.shz.imagepicker.imagepicker.model.PickedImage
 import com.shz.imagepicker.imagepicker.model.PickedResult
@@ -15,6 +16,7 @@ import com.shz.imagepicker.imagepicker.utils.getCaptureImageOutputUri
 import com.shz.imagepicker.imagepicker.utils.getCaptureImageResultUri
 import com.shz.imagepicker.imagepicker.utils.getNormalizedUri
 import java.io.File
+import java.lang.Exception
 
 internal class CameraPickerActivity : ImagePickerActivity() {
 
@@ -42,28 +44,29 @@ internal class CameraPickerActivity : ImagePickerActivity() {
         filename = System.nanoTime().toString()
         val uri = getCaptureImageOutputUri(this, filename)
         if (filename.isNotEmpty() && authority.isNotEmpty()) uri?.path?.let { path ->
-            val file = File(path)
-            if (Build.VERSION.SDK_INT >= 24) {
-                cameraIntent.putExtra(
-                    MediaStore.EXTRA_OUTPUT,
-                    FileProvider.getUriForFile(
-                        this,
-                        authority,
-                        file,
+            try {
+                val file = File(path)
+                if (Build.VERSION.SDK_INT >= 24) {
+                    cameraIntent.putExtra(
+                        MediaStore.EXTRA_OUTPUT,
+                        FileProvider.getUriForFile(this, authority, file)
                     )
-                )
-                cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            } else {
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                    cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                } else {
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                }
+                launcher.launch(cameraIntent)
+            } catch (e: Exception) {
+                e.message?.let { errorCallback::onImagePickerErrorResult.invoke(it) }
             }
-            launcher.launch(cameraIntent)
         }
     }
 
     companion object {
         @JvmField
         internal var callback: ImagePickerCallback = ImagePickerCallback { }
+        internal var errorCallback: ImagePickerErrorCallback = ImagePickerErrorCallback { }
         internal var authority: String = ""
     }
 }

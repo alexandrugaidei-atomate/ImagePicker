@@ -24,3 +24,7 @@ fun interface ImagePickerCallback {
      */
     fun onImagePickerResult(result: PickedResult)
 }
+
+fun interface ImagePickerErrorCallback {
+    fun onImagePickerErrorResult(message: String)
+}

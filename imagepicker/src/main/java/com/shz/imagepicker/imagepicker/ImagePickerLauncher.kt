@@ -15,10 +15,12 @@ internal class ImagePickerLauncher(private val context: Context) {
     fun launchCameraPicker(
         authority: String,
         callback: ImagePickerCallback,
+        errorCallback: ImagePickerErrorCallback,
     ) {
         ImagePicker.debugLog("[Launcher] launchCameraPicker")
         CameraPickerActivity.authority = authority
         CameraPickerActivity.callback = callback
+        CameraPickerActivity.errorCallback = errorCallback
         context.startActivity(Intent(context, CameraPickerActivity::class.java))
     }
 

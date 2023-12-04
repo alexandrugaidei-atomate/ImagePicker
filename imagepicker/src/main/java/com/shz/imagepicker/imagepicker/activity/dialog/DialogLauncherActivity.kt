@@ -35,6 +35,7 @@ internal class DialogLauncherActivity : AppCompatActivity(), ImagePickerDialog.L
         ImagePickerLauncher(this).launchCameraPicker(
             authority = payload?.authority ?: "",
             callback = callback,
+            errorCallback = errorCallback,
         )
         finish()
     }
@@ -72,6 +73,9 @@ internal class DialogLauncherActivity : AppCompatActivity(), ImagePickerDialog.L
 
         @JvmField
         internal var callback: ImagePickerCallback = ImagePickerCallback {  }
+
+        @JvmField
+        internal var errorCallback: ImagePickerErrorCallback = ImagePickerErrorCallback {  }
 
         @JvmField
         internal var loadDelegate: ImagePickerLoadDelegate = defaultImagePickerLoadDelegate

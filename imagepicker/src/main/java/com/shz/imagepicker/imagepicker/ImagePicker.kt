@@ -21,6 +21,7 @@ import java.io.File
 class ImagePicker private constructor(
     private val authority: String,
     private val callback: ImagePickerCallback,
+    private val errorCallback: ImagePickerErrorCallback,
     private val useCamera: Boolean,
     private val useGallery: Boolean,
     private val autoRotate: Boolean,
@@ -46,7 +47,7 @@ class ImagePicker private constructor(
      */
     fun launch(context: Context) = with(ImagePickerLauncher(context)) {
         when {
-            useCamera && !useGallery -> launchCameraPicker(authority, callback)
+            useCamera && !useGallery -> launchCameraPicker(authority, callback, errorCallback)
             !useCamera && useGallery -> launchGalleryPicker(
                 callback = callback,
                 delegate = loadDelegate,
@@ -81,6 +82,7 @@ class ImagePicker private constructor(
     class Builder(
         private val authority: String,
         private val callback: ImagePickerCallback,
+        private val errorCallback: ImagePickerErrorCallback,
     ) {
         private var useCamera: Boolean = false
         private var useGallery: Boolean = false
@@ -109,6 +111,7 @@ class ImagePicker private constructor(
             return ImagePicker(
                 authority = authority,
                 callback = callback,
+                errorCallback = errorCallback,
                 useCamera = useCamera,
                 useGallery = useGallery,
                 autoRotate = autoRotate,
@@ -231,8 +234,9 @@ class ImagePicker private constructor(
             inline fun build(
                 authority: String,
                 callback: ImagePickerCallback,
+                errorCallback: ImagePickerErrorCallback,
                 block: Builder.() -> Unit,
-            ) = Builder(authority, callback)
+            ) = Builder(authority, callback, errorCallback)
                 .apply(block)
                 .build()
         }
